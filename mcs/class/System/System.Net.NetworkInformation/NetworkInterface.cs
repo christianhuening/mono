@@ -447,7 +447,7 @@ namespace System.Net.NetworkInformation {
 		const int AF_INET6 = 30;
 		const int AF_LINK  = 18;
 
-		private uint _ifa_flags;
+		private MacOsInterfaceFlags _ifa_flags;
 		
 		public static NetworkInterface [] ImplGetAllNetworkInterfaces ()
 		{
@@ -523,7 +523,7 @@ namespace System.Net.NetworkInformation {
 
 					// create interface if not already present
 					if (!interfaces.TryGetValue (name, out iface)) {
-						iface = new MacOsNetworkInterface (name, addr.ifa_flags);
+						iface = new MacOsNetworkInterface (name, (MacOsInterfaceFlags)addr.ifa_flags);
 						interfaces.Add (name, iface);
 					}
 
@@ -550,7 +550,7 @@ namespace System.Net.NetworkInformation {
 			return result;
 		}
 		
-		MacOsNetworkInterface (string name, uint ifa_flags)
+		MacOsNetworkInterface (string name, MacOsInterfaceFlags ifa_flags)
 			: base (name)
 		{
 			_ifa_flags = ifa_flags;
@@ -572,7 +572,7 @@ namespace System.Net.NetworkInformation {
 
 		public override OperationalStatus OperationalStatus {
 			get {
-				if(((MacOsInterfaceFlags)_ifa_flags & MacOsInterfaceFlags.IFF_UP) == MacOsInterfaceFlags.IFF_UP){
+				if((_ifa_flags & MacOsInterfaceFlags.IFF_UP) == MacOsInterfaceFlags.IFF_UP){
 					return OperationalStatus.Up;
 				}
 				return OperationalStatus.Unknown;
@@ -581,7 +581,7 @@ namespace System.Net.NetworkInformation {
 
 		public override bool SupportsMulticast {
 			get {
-				return ((MacOsInterfaceFlags)_ifa_flags & MacOsInterfaceFlags.IFF_MULTICAST) == MacOsInterfaceFlags.IFF_MULTICAST;
+				return (_ifa_flags & MacOsInterfaceFlags.IFF_MULTICAST) == MacOsInterfaceFlags.IFF_MULTICAST;
 			}
 		}
 	}
